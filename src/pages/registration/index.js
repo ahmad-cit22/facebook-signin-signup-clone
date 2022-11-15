@@ -225,7 +225,7 @@ const Registration = () => {
               )}
 
               {successMsg !== "" && (
-                <p className="text-lg text-[green] pl-1 pt-2 linear duration-300 animate-[popDown_.4s_ease_1]">
+                <p className="text-lg text-[green] pl-1 pt-4 pb-1 linear duration-300 animate-[popDown_.4s_ease_1]">
                   {successMsg}
                 </p>
               )}
