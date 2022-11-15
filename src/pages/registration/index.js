@@ -4,9 +4,14 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "firebase/auth";
+import { Link, useNavigate } from "react-router-dom";
+import SyncLoader from "react-spinners/SyncLoader";
+import { RiEyeCloseLine } from "react-icons/ri";
+import { RiEyeFill } from "react-icons/ri";
 
 const Registration = () => {
   const auth = getAuth();
+  const navigate = useNavigate();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -20,7 +25,12 @@ const Registration = () => {
   const [errMsgPass, setErrMsgPass] = useState("");
   const [errMsgCPass, setErrMsgCPass] = useState("");
 
+  const [fErr, setFErr] = useState("");
+  const [fErrPass, setFErrPass] = useState("");
+
   const [successMsg, setSuccessMsg] = useState("");
+
+  const [loading, setLoading] = useState(false);
 
   const validName = /^[A-z\s]+$/;
   const validEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -41,6 +51,7 @@ const Registration = () => {
   const handleEmail = (e) => {
     setEmail(e.target.value);
     setErrMsgEmail("");
+    setFErr("");
     setSuccessMsg("");
   };
 
@@ -81,6 +92,7 @@ const Registration = () => {
     } else if (confPassword !== password) {
       setErrMsgCPass("Password does not match!");
     } else {
+      setLoading(true);
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           // Signed in
@@ -89,16 +101,27 @@ const Registration = () => {
           sendEmailVerification(auth.currentUser)
             .then(() => {
               setSuccessMsg(
-                "Registration done successfully! Please check your email for verification link."
+                "Registration done successfully! Redirecting you to the Login page. Please check your email for verification link."
               );
-              console.log("Email verification sent!");
+              setTimeout(() => {
+                setLoading(false);
+                navigate("/");
+                setSuccessMsg("");
+              }, 1500);
             })
             .catch((err) => {
+              setLoading(false);
               console.log(err.code);
             });
         })
         .catch((error) => {
+          setLoading(false);
           const errorCode = error.code;
+          if (errorCode.includes("auth/email-already-in-use")) {
+            setFErr("Sorry! This email is already taken.");
+          } else if (errorCode.includes("auth/network-request-failed")) {
+            setFErrPass("Network error! Check your connection pls.");
+          }
           console.log(errorCode);
         });
     }
@@ -117,8 +140,9 @@ const Registration = () => {
             </p>
           </div>
         </div>
-        <div className="w-[51%]">
-          <div className="flex h-screen items-center">
+        <div className="w-[51%] mr-20">
+          <div className="flex flex-col h-screen items-center justify-center">
+            {/* form starts  */}
             <form className="w-3/4">
               <input
                 type={"text"}
@@ -156,6 +180,12 @@ const Registration = () => {
                 </p>
               )}
 
+              {fErr !== "" && (
+                <p className="text-[15px] text-[red] pl-1 pt-1 linear duration-300 animate-[popUpY_.4s_ease_1]">
+                  {fErr}
+                </p>
+              )}
+
               <input
                 type={"password"}
                 className="w-full py-5 px-[18px] text-base rounded-md border-2 border-[#D9D9D9] outline-0 focus:border-[#1877f2] mt-4 linear duration-300"
@@ -186,17 +216,27 @@ const Registration = () => {
                 </p>
               )}
 
+              {/* form submit button  */}
               <button
                 type="submit"
-                className="w-full py-5 px-[18px] text-xl rounded-[5px] bg-[#1877f2] text-white font-semibold mt-6 linear duration-300 hover:bg-[#0D60CF]"
+                className={`w-full py-5 px-[18px] text-xl text-center rounded-[5px] bg-[#1877f2] text-white font-semibold mt-6 linear duration-300 hover:bg-[#0D60CF] active:scale-90 ${
+                  loading && "bg-[#1877f2]/70"
+                }`}
                 onClick={handleSubmit}
+                disabled={loading}
               >
-                Sign Up
+                {loading ? <SyncLoader margin={3} color={"#fff"} /> : "Sign Up"}
               </button>
-              <button className="w-[65%] py-[22px] px-[18px] text-lg rounded-[5px] bg-[#36A420] text-white font-semibold m-auto block mt-6 linear duration-300 hover:bg-[#248112]">
-                Already Have Account
-              </button>
+              {/* form submit button  */}
             </form>
+            {/* form ends  */}
+
+            <Link
+              to={loading ? "" : "/login"}
+              className="w-[50%] py-[18px] px-[18px] text-center text-lg rounded-[5px] bg-[#36A420] text-white font-semibold mt-8 linear duration-300 hover:bg-[#248112] active:scale-90"
+            >
+              Already Have Account
+            </Link>
           </div>
         </div>
       </div>
