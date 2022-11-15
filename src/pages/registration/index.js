@@ -31,6 +31,7 @@ const Registration = () => {
   const [successMsg, setSuccessMsg] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [passShow, setPassShow] = useState(false);
 
   const validName = /^[A-z\s]+$/;
   const validEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -186,12 +187,25 @@ const Registration = () => {
                 </p>
               )}
 
-              <input
-                type={"password"}
-                className="w-full py-5 px-[18px] text-base rounded-md border-2 border-[#D9D9D9] outline-0 focus:border-[#1877f2] mt-4 linear duration-300"
-                placeholder="Password"
-                onChange={handlePassword}
-              />
+              <div className="relative">
+                <input
+                  type={passShow ? "text" : "password"}
+                  className="w-full py-5 px-[18px] pr-14 text-base rounded-md border-2 border-[#D9D9D9] outline-0 focus:border-[#1877f2] mt-4 linear duration-300"
+                  placeholder="Password"
+                  onChange={handlePassword}
+                />
+                {passShow ? (
+                  <RiEyeFill
+                    className="text-3xl absolute top-[37px] right-5 text-[#1877f2]/70 hover:text-[#1877f2] cursor-pointer linear duration-300"
+                    onClick={() => setPassShow(!passShow)}
+                  />
+                ) : (
+                  <RiEyeCloseLine
+                    className="text-3xl absolute top-[37px] right-5 text-[#1877f2]/70 hover:text-[#1877f2] cursor-pointer linear duration-300"
+                    onClick={() => setPassShow(!passShow)}
+                  />
+                )}
+              </div>
               {errMsgPass !== "" && (
                 <p className="text-[15px] text-[red] pl-1 pt-1 linear duration-300 animate-[popUpY_.4s_ease_1]">
                   {errMsgPass}
@@ -199,8 +213,8 @@ const Registration = () => {
               )}
 
               <input
-                type={"password"}
-                className="w-full py-5 px-[18px] text-base rounded-md border-2 border-[#D9D9D9] outline-0 focus:border-[#1877f2] mt-4 linear duration-300"
+                type={passShow ? "text" : "password"}
+                className="w-full py-5 px-[18px] pr-14 text-base rounded-md border-2 border-[#D9D9D9] outline-0 focus:border-[#1877f2] mt-4 linear duration-300"
                 placeholder="Confirm Password"
                 onChange={handleConfPassword}
               />
